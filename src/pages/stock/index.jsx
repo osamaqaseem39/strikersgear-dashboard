@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -9,10 +10,6 @@ import {
   TableHead,
   TableRow,
   IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   TextField,
   MenuItem,
   Chip,
@@ -21,21 +18,12 @@ import {
 import { Edit, Add } from '@mui/icons-material';
 import MainCard from 'components/MainCard';
 import { stockApi, productsApi, sizesApi } from 'api/api';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-
-const validationSchema = yup.object({
-  product: yup.string().required('Product is required'),
-  size: yup.string().required('Size is required'),
-  stockQty: yup.number().min(0, 'Stock must be 0 or greater').required('Stock quantity is required'),
-});
 
 export default function StockPage() {
+  const navigate = useNavigate();
   const [stock, setStock] = useState([]);
   const [products, setProducts] = useState([]);
   const [sizes, setSizes] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [editingStock, setEditingStock] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState('');
 
@@ -85,43 +73,8 @@ export default function StockPage() {
     }
   };
 
-  const formik = useFormik({
-    initialValues: {
-      product: '',
-      size: '',
-      stockQty: 0,
-    },
-    validationSchema,
-    onSubmit: async (values) => {
-      try {
-        if (editingStock) {
-          await stockApi.update(editingStock._id, { stockQty: values.stockQty });
-        } else {
-          await stockApi.create(values);
-        }
-        formik.resetForm();
-        setOpen(false);
-        setEditingStock(null);
-        if (selectedProduct) {
-          loadStockForProduct(selectedProduct);
-        } else {
-          loadAllStock();
-        }
-      } catch (error) {
-        console.error('Error saving stock:', error);
-        alert('Error saving stock: ' + error.message);
-      }
-    },
-  });
-
   const handleEdit = (stockItem) => {
-    setEditingStock(stockItem);
-    formik.setValues({
-      product: stockItem.product?._id || stockItem.product || '',
-      size: stockItem.size?._id || stockItem.size || '',
-      stockQty: stockItem.stockQty || 0,
-    });
-    setOpen(true);
+    navigate(`/stock/${stockItem._id}/edit`);
   };
 
   const handleQuickUpdate = async (stockItem, newQty) => {
@@ -140,12 +93,6 @@ export default function StockPage() {
       console.error('Error updating stock:', error);
       alert('Error updating stock: ' + error.message);
     }
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setEditingStock(null);
-    formik.resetForm();
   };
 
   return (
@@ -168,7 +115,7 @@ export default function StockPage() {
         <Button
           variant="contained"
           startIcon={<Add />}
-          onClick={() => setOpen(true)}
+          onClick={() => navigate('/stock/new')}
         >
           Add Stock
         </Button>
@@ -247,69 +194,6 @@ export default function StockPage() {
           </TableBody>
         </Table>
       </Card>
-
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <form onSubmit={formik.handleSubmit}>
-          <DialogTitle>
-            {editingStock ? 'Edit Stock' : 'Add Stock'}
-          </DialogTitle>
-          <DialogContent>
-            <TextField
-              fullWidth
-              margin="normal"
-              select
-              label="Product"
-              name="product"
-              value={formik.values.product}
-              onChange={formik.handleChange}
-              error={formik.touched.product && Boolean(formik.errors.product)}
-              helperText={formik.touched.product && formik.errors.product}
-              disabled={!!editingStock}
-            >
-              {products.map((product) => (
-                <MenuItem key={product._id} value={product._id}>
-                  {product.name}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              fullWidth
-              margin="normal"
-              select
-              label="Size"
-              name="size"
-              value={formik.values.size}
-              onChange={formik.handleChange}
-              error={formik.touched.size && Boolean(formik.errors.size)}
-              helperText={formik.touched.size && formik.errors.size}
-              disabled={!!editingStock}
-            >
-              {sizes.map((size) => (
-                <MenuItem key={size._id} value={size._id}>
-                  {size.label} ({size.sizeType?.name || ''})
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Stock Quantity"
-              name="stockQty"
-              type="number"
-              value={formik.values.stockQty}
-              onChange={formik.handleChange}
-              error={formik.touched.stockQty && Boolean(formik.errors.stockQty)}
-              helperText={formik.touched.stockQty && formik.errors.stockQty}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit" variant="contained">
-              {editingStock ? 'Update' : 'Create'}
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
     </MainCard>
   );
 }

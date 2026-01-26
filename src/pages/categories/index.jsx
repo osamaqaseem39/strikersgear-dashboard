@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -9,27 +10,15 @@ import {
   TableHead,
   TableRow,
   IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
   Chip,
 } from '@mui/material';
 import { Edit, Delete, Add } from '@mui/icons-material';
 import MainCard from 'components/MainCard';
 import { categoriesApi } from 'api/api';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-
-const validationSchema = yup.object({
-  name: yup.string().required('Name is required'),
-});
 
 export default function CategoriesPage() {
+  const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState(null);
 
   useEffect(() => {
     loadCategories();
@@ -44,39 +33,8 @@ export default function CategoriesPage() {
     }
   };
 
-  const formik = useFormik({
-    initialValues: {
-      name: '',
-      slug: '',
-      isActive: true,
-    },
-    validationSchema,
-    onSubmit: async (values) => {
-      try {
-        if (editingCategory) {
-          await categoriesApi.update(editingCategory._id, values);
-        } else {
-          await categoriesApi.create(values);
-        }
-        formik.resetForm();
-        setOpen(false);
-        setEditingCategory(null);
-        loadCategories();
-      } catch (error) {
-        console.error('Error saving category:', error);
-        alert('Error saving category: ' + error.message);
-      }
-    },
-  });
-
   const handleEdit = (category) => {
-    setEditingCategory(category);
-    formik.setValues({
-      name: category.name || '',
-      slug: category.slug || '',
-      isActive: category.isActive !== false,
-    });
-    setOpen(true);
+    navigate(`/categories/${category._id}/edit`);
   };
 
   const handleDelete = async (id) => {
@@ -91,16 +49,10 @@ export default function CategoriesPage() {
     }
   };
 
-  const handleClose = () => {
-    setOpen(false);
-    setEditingCategory(null);
-    formik.resetForm();
-  };
-
   return (
     <MainCard title="Categories">
       <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
-        <Button variant="contained" startIcon={<Add />} onClick={() => setOpen(true)}>
+        <Button variant="contained" startIcon={<Add />} onClick={() => navigate('/categories/new')}>
           Add Category
         </Button>
       </Box>
@@ -140,50 +92,6 @@ export default function CategoriesPage() {
           </TableBody>
         </Table>
       </Card>
-
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <form onSubmit={formik.handleSubmit}>
-          <DialogTitle>{editingCategory ? 'Edit Category' : 'Add Category'}</DialogTitle>
-          <DialogContent>
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Name"
-              name="name"
-              value={formik.values.name}
-              onChange={formik.handleChange}
-              error={formik.touched.name && Boolean(formik.errors.name)}
-              helperText={formik.touched.name && formik.errors.name}
-            />
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Slug (Optional)"
-              name="slug"
-              value={formik.values.slug}
-              onChange={formik.handleChange}
-            />
-            <TextField
-              fullWidth
-              margin="normal"
-              select
-              label="Status"
-              name="isActive"
-              value={formik.values.isActive}
-              onChange={formik.handleChange}
-            >
-              <option value={true}>Active</option>
-              <option value={false}>Inactive</option>
-            </TextField>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit" variant="contained">
-              {editingCategory ? 'Update' : 'Create'}
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
     </MainCard>
   );
 }

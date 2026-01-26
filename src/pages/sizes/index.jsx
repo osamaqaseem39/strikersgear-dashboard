@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -9,37 +10,18 @@ import {
   TableHead,
   TableRow,
   IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  MenuItem,
   Tabs,
   Tab,
 } from '@mui/material';
 import { Edit, Delete, Add } from '@mui/icons-material';
 import MainCard from 'components/MainCard';
 import { sizesApi } from 'api/api';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-
-const validationSchema = yup.object({
-  name: yup.string().required('Name is required'),
-});
-
-const sizeValidationSchema = yup.object({
-  sizeType: yup.string().required('Size Type is required'),
-  label: yup.string().required('Label is required'),
-});
 
 export default function SizesPage() {
+  const navigate = useNavigate();
   const [sizeTypes, setSizeTypes] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [tab, setTab] = useState(0);
-  const [open, setOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
-  const [isSizeType, setIsSizeType] = useState(true);
 
   useEffect(() => {
     loadData();
@@ -58,56 +40,12 @@ export default function SizesPage() {
     }
   };
 
-  const formik = useFormik({
-    initialValues: {
-      name: '',
-      sizeType: '',
-      label: '',
-      sortOrder: 0,
-    },
-    validationSchema: isSizeType ? validationSchema : sizeValidationSchema,
-    onSubmit: async (values) => {
-      try {
-        if (isSizeType) {
-          if (editingItem) {
-            // Update size type if needed
-            await sizesApi.createSizeType(values);
-          } else {
-            await sizesApi.createSizeType(values);
-          }
-        } else {
-          if (editingItem) {
-            await sizesApi.update(editingItem._id, values);
-          } else {
-            await sizesApi.create(values);
-          }
-        }
-        formik.resetForm();
-        setOpen(false);
-        setEditingItem(null);
-        loadData();
-      } catch (error) {
-        console.error('Error saving:', error);
-        alert('Error saving: ' + error.message);
-      }
-    },
-  });
-
   const handleEdit = (item, isType) => {
-    setEditingItem(item);
-    setIsSizeType(isType);
     if (isType) {
-      formik.setValues({
-        name: item.name || '',
-      });
+      navigate(`/sizes/${item._id}/edit?type=size-type`);
     } else {
-      formik.setValues({
-        sizeType: item.sizeType?._id || item.sizeType || '',
-        label: item.label || '',
-        sortOrder: item.sortOrder || 0,
-      });
+      navigate(`/sizes/${item._id}/edit`);
     }
-    setOpen(true);
   };
 
   const handleDelete = async (id, isType) => {
@@ -127,16 +65,12 @@ export default function SizesPage() {
     }
   };
 
-  const handleClose = () => {
-    setOpen(false);
-    setEditingItem(null);
-    formik.resetForm();
-  };
-
   const handleAdd = (isType) => {
-    setIsSizeType(isType);
-    formik.resetForm();
-    setOpen(true);
+    if (isType) {
+      navigate('/sizes/new?type=size-type');
+    } else {
+      navigate('/sizes/new');
+    }
   };
 
   return (
@@ -154,7 +88,7 @@ export default function SizesPage() {
             <Button
               variant="contained"
               startIcon={<Add />}
-              onClick={() => handleAdd(true)}
+              onClick={() => navigate('/sizes/new?type=size-type')}
             >
               Add Size Type
             </Button>
@@ -200,7 +134,7 @@ export default function SizesPage() {
             <Button
               variant="contained"
               startIcon={<Add />}
-              onClick={() => handleAdd(false)}
+              onClick={() => navigate('/sizes/new')}
             >
               Add Size
             </Button>
@@ -243,77 +177,6 @@ export default function SizesPage() {
           </Card>
         </>
       )}
-
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <form onSubmit={formik.handleSubmit}>
-          <DialogTitle>
-            {editingItem
-              ? `Edit ${isSizeType ? 'Size Type' : 'Size'}`
-              : `Add ${isSizeType ? 'Size Type' : 'Size'}`}
-          </DialogTitle>
-          <DialogContent>
-            {isSizeType ? (
-              <TextField
-                fullWidth
-                margin="normal"
-                label="Name"
-                name="name"
-                value={formik.values.name}
-                onChange={formik.handleChange}
-                error={formik.touched.name && Boolean(formik.errors.name)}
-                helperText={formik.touched.name && formik.errors.name}
-                placeholder="UK, EU, Alpha, Free"
-              />
-            ) : (
-              <>
-                <TextField
-                  fullWidth
-                  margin="normal"
-                  select
-                  label="Size Type"
-                  name="sizeType"
-                  value={formik.values.sizeType}
-                  onChange={formik.handleChange}
-                  error={formik.touched.sizeType && Boolean(formik.errors.sizeType)}
-                  helperText={formik.touched.sizeType && formik.errors.sizeType}
-                >
-                  {sizeTypes.map((st) => (
-                    <MenuItem key={st._id} value={st._id}>
-                      {st.name}
-                    </MenuItem>
-                  ))}
-                </TextField>
-                <TextField
-                  fullWidth
-                  margin="normal"
-                  label="Label"
-                  name="label"
-                  value={formik.values.label}
-                  onChange={formik.handleChange}
-                  error={formik.touched.label && Boolean(formik.errors.label)}
-                  helperText={formik.touched.label && formik.errors.label}
-                  placeholder="7, 42, S, M, L, Free"
-                />
-                <TextField
-                  fullWidth
-                  margin="normal"
-                  label="Sort Order"
-                  name="sortOrder"
-                  type="number"
-                  value={formik.values.sortOrder}
-                  onChange={formik.handleChange}
-                />
-              </>
-            )}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit" variant="contained">
-              {editingItem ? 'Update' : 'Create'}
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
     </MainCard>
   );
 }
