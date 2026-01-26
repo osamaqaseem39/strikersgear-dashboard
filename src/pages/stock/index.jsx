@@ -19,8 +19,8 @@ import {
   Typography,
 } from '@mui/material';
 import { Edit, Add } from '@mui/icons-material';
-import MainCard from '../../../components/MainCard';
-import { stockApi, productsApi, sizesApi } from '../../../api/api';
+import MainCard from 'components/MainCard';
+import { stockApi, productsApi, sizesApi } from 'api/api';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 

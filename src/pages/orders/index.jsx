@@ -19,8 +19,8 @@ import {
   Button,
 } from '@mui/material';
 import { Visibility, Edit } from '@mui/icons-material';
-import MainCard from '../../../components/MainCard';
-import { ordersApi } from '../../../api/api';
+import MainCard from 'components/MainCard';
+import { ordersApi } from 'api/api';
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);

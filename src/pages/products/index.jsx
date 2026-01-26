@@ -19,8 +19,8 @@ import {
   Chip,
 } from '@mui/material';
 import { Edit, Delete, Add, Image as ImageIcon } from '@mui/icons-material';
-import MainCard from '../../../components/MainCard';
-import { productsApi, categoriesApi, brandsApi } from '../../../api/api';
+import MainCard from 'components/MainCard';
+import { productsApi, categoriesApi, brandsApi } from 'api/api';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 

@@ -19,8 +19,8 @@ import {
   Tab,
 } from '@mui/material';
 import { Edit, Delete, Add } from '@mui/icons-material';
-import MainCard from '../../../components/MainCard';
-import { sizesApi } from '../../../api/api';
+import MainCard from 'components/MainCard';
+import { sizesApi } from 'api/api';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
