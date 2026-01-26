@@ -5,11 +5,10 @@ import path from 'path';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const API_URL = env.VITE_APP_BASE_NAME || '/';
   const PORT = 3000;
 
   return {
-    base: API_URL,
+    base: '/',
     server: {
       open: true,
       port: PORT,
