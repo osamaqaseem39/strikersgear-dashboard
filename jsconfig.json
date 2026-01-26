@@ -18,5 +18,5 @@
     "baseUrl": "src"
   },
   "exclude": ["node_modules", "dist", "build"],
-  "include": ["src/**/*.js", "src/**/*.jsx"]
+  "include": ["src"]
 }
