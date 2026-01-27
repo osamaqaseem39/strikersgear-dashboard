@@ -166,66 +166,63 @@ export default function ProductFormPage() {
         </Button>
       </Box>
 
-      <Card>
-        <CardContent>
-          <form onSubmit={formik.handleSubmit}>
-            <Stack spacing={4}>
-              {/* Product details */}
-              <Box>
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  Product details
-                </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={6}>
-                    <TextField
-                      fullWidth
-                      label="Name"
-                      name="name"
-                      value={formik.values.name}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      error={formik.touched.name && Boolean(formik.errors.name)}
-                      helperText={formik.touched.name && formik.errors.name}
-                      required
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <TextField
-                      fullWidth
-                      label="Short description"
-                      name="shortDescription"
-                      placeholder="Brief summary (e.g. for listings, meta)"
-                      value={formik.values.shortDescription}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="Long description"
-                      name="description"
-                      multiline
-                      rows={4}
-                      placeholder="Full product description"
-                      value={formik.values.description}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <TextField
-                      fullWidth
-                      label="Size info / fit notes"
-                      name="sizeInfo"
-                      placeholder="e.g. Regular fit, model is 180cm wearing size M"
-                      value={formik.values.sizeInfo}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <Box>
+      <form onSubmit={formik.handleSubmit}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={8}>
+            <Card>
+              <CardContent>
+                <Stack spacing={3}>
+                  <Typography variant="h6">Product details</Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Name"
+                        name="name"
+                        value={formik.values.name}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={formik.touched.name && Boolean(formik.errors.name)}
+                        helperText={formik.touched.name && formik.errors.name}
+                        required
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Short description"
+                        name="shortDescription"
+                        placeholder="Brief summary (e.g. for listings, meta)"
+                        value={formik.values.shortDescription}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Long description"
+                        name="description"
+                        multiline
+                        rows={4}
+                        placeholder="Full product description"
+                        value={formik.values.description}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Size info / fit notes"
+                        name="sizeInfo"
+                        placeholder="e.g. Regular fit, model is 180cm wearing size M"
+                        value={formik.values.sizeInfo}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
                       <Typography variant="subtitle2" sx={{ mb: 1 }}>
                         Size chart image
                       </Typography>
@@ -234,131 +231,130 @@ export default function ProductFormPage() {
                         value={formik.values.sizeChart}
                         onChange={(url) => formik.setFieldValue('sizeChart', url)}
                       />
-                    </Box>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Features (one per line)"
+                        name="featuresText"
+                        multiline
+                        rows={3}
+                        placeholder={'Breathable fabric\nMoisture-wicking\nDurable stitching'}
+                        value={formik.values.featuresText}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                      />
+                    </Grid>
                   </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="Features (one per line)"
-                      name="featuresText"
-                      multiline
-                      rows={3}
-                      placeholder={'Breathable fabric\nMoisture-wicking\nDurable stitching'}
-                      value={formik.values.featuresText}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                    />
-                  </Grid>
-                </Grid>
-              </Box>
+                </Stack>
+              </CardContent>
+            </Card>
 
-              <Divider />
-
-              {/* Attributes */}
-              <Box>
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  Attributes
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                  Add extra info like color, material, collection, etc.
-                </Typography>
-                <Stack spacing={1}>
-                  {(formik.values.attributes || []).map((attr, index) => (
-                    <Grid container spacing={2} key={index}>
-                      <Grid item xs={12} md={4}>
-                        <TextField
-                          fullWidth
-                          label="Name"
-                          placeholder="Color"
-                          value={attr.name || ''}
-                          onChange={(e) =>
-                            formik.setFieldValue(
-                              `attributes[${index}].name`,
-                              e.target.value,
-                            )
-                          }
-                        />
-                      </Grid>
-                      <Grid item xs={12} md={6}>
-                        <TextField
-                          fullWidth
-                          label="Value"
-                          placeholder="Black"
-                          value={attr.value || ''}
-                          onChange={(e) =>
-                            formik.setFieldValue(
-                              `attributes[${index}].value`,
-                              e.target.value,
-                            )
-                          }
-                        />
-                      </Grid>
-                      <Grid item xs={12} md={2} sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box sx={{ mt: 3 }}>
+              <Card>
+                <CardContent>
+                  <Stack spacing={2}>
+                    <Typography variant="h6">Attributes</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Add extra info like color, material, collection, etc.
+                    </Typography>
+                    <Stack spacing={1}>
+                      {(formik.values.attributes || []).map((attr, index) => (
+                        <Grid container spacing={2} key={index}>
+                          <Grid item xs={12} md={4}>
+                            <TextField
+                              fullWidth
+                              label="Name"
+                              placeholder="Color"
+                              value={attr.name || ''}
+                              onChange={(e) =>
+                                formik.setFieldValue(
+                                  `attributes[${index}].name`,
+                                  e.target.value,
+                                )
+                              }
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={6}>
+                            <TextField
+                              fullWidth
+                              label="Value"
+                              placeholder="Black"
+                              value={attr.value || ''}
+                              onChange={(e) =>
+                                formik.setFieldValue(
+                                  `attributes[${index}].value`,
+                                  e.target.value,
+                                )
+                              }
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={2} sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Button
+                              color="error"
+                              fullWidth
+                              onClick={() => {
+                                const next = [...(formik.values.attributes || [])];
+                                next.splice(index, 1);
+                                formik.setFieldValue('attributes', next);
+                              }}
+                            >
+                              Remove
+                            </Button>
+                          </Grid>
+                        </Grid>
+                      ))}
+                      <Box>
                         <Button
-                          color="error"
-                          fullWidth
-                          onClick={() => {
-                            const next = [...(formik.values.attributes || [])];
-                            next.splice(index, 1);
-                            formik.setFieldValue('attributes', next);
-                          }}
+                          variant="outlined"
+                          onClick={() =>
+                            formik.setFieldValue('attributes', [
+                              ...(formik.values.attributes || []),
+                              { name: '', value: '' },
+                            ])
+                          }
                         >
-                          Remove
+                          Add attribute
                         </Button>
+                      </Box>
+                    </Stack>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Box>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <Stack spacing={3}>
+              <Card>
+                <CardContent>
+                  <Stack spacing={2}>
+                    <Typography variant="h6">Images</Typography>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12}>
+                        <ImageUpload
+                          label="Featured image"
+                          value={formik.values.featuredImage}
+                          onChange={(url) => formik.setFieldValue('featuredImage', url)}
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <ImageGalleryUpload
+                          label="Product gallery"
+                          value={formik.values.gallery}
+                          onChange={(urls) => formik.setFieldValue('gallery', urls)}
+                          max={10}
+                        />
                       </Grid>
                     </Grid>
-                  ))}
-                  <Box>
-                    <Button
-                      variant="outlined"
-                      onClick={() =>
-                        formik.setFieldValue('attributes', [
-                          ...(formik.values.attributes || []),
-                          { name: '', value: '' },
-                        ])
-                      }
-                    >
-                      Add attribute
-                    </Button>
-                  </Box>
-                </Stack>
-              </Box>
+                  </Stack>
+                </CardContent>
+              </Card>
 
-              <Divider />
-
-              {/* Media */}
-              <Box>
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  Images
-                </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={6}>
-                    <ImageUpload
-                      label="Featured image"
-                      value={formik.values.featuredImage}
-                      onChange={(url) => formik.setFieldValue('featuredImage', url)}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <ImageGalleryUpload
-                      label="Product gallery"
-                      value={formik.values.gallery}
-                      onChange={(urls) => formik.setFieldValue('gallery', urls)}
-                      max={10}
-                    />
-                  </Grid>
-                </Grid>
-              </Box>
-
-              <Divider />
-
-              {/* Pricing & status */}
-              <Box>
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  Pricing & status
-                </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Stack spacing={2}>
+                    <Typography variant="h6">Pricing & status</Typography>
                     <TextField
                       fullWidth
                       select
@@ -377,8 +373,6 @@ export default function ProductFormPage() {
                         </MenuItem>
                       ))}
                     </TextField>
-                  </Grid>
-                  <Grid item xs={12} md={6}>
                     <TextField
                       fullWidth
                       select
@@ -395,8 +389,6 @@ export default function ProductFormPage() {
                         </MenuItem>
                       ))}
                     </TextField>
-                  </Grid>
-                  <Grid item xs={12} md={4}>
                     <TextField
                       fullWidth
                       label="Price"
@@ -409,8 +401,6 @@ export default function ProductFormPage() {
                       helperText={formik.touched.price && formik.errors.price}
                       required
                     />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
                     <TextField
                       fullWidth
                       label="Discount (%)"
@@ -422,8 +412,6 @@ export default function ProductFormPage() {
                       onBlur={formik.handleBlur}
                       helperText="Optional. Leave empty for no discount."
                     />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
                     <TextField
                       fullWidth
                       select
@@ -436,9 +424,9 @@ export default function ProductFormPage() {
                       <MenuItem value={true}>Active</MenuItem>
                       <MenuItem value={false}>Inactive</MenuItem>
                     </TextField>
-                  </Grid>
-                </Grid>
-              </Box>
+                  </Stack>
+                </CardContent>
+              </Card>
 
               <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
                 <Button
@@ -452,9 +440,9 @@ export default function ProductFormPage() {
                 </Button>
               </Box>
             </Stack>
-          </form>
-        </CardContent>
-      </Card>
+          </Grid>
+        </Grid>
+      </form>
     </MainCard>
   );
 }
