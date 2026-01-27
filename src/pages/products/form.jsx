@@ -167,263 +167,253 @@ export default function ProductFormPage() {
       </Box>
 
       <form onSubmit={formik.handleSubmit}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={8}>
-            <Card>
-              <CardContent>
-                <Stack spacing={3}>
-                  <Typography variant="h6">Product details</Typography>
-                  <Stack spacing={3}>
-                    <TextField
-                      fullWidth
-                      label="Name"
-                      name="name"
-                      value={formik.values.name}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      error={formik.touched.name && Boolean(formik.errors.name)}
-                      helperText={formik.touched.name && formik.errors.name}
-                      required
-                    />
-                    <TextField
-                      fullWidth
-                      label="Short description"
-                      name="shortDescription"
-                      placeholder="Brief summary (e.g. for listings, meta)"
-                      value={formik.values.shortDescription}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                    />
-                    <TextField
-                      fullWidth
-                      label="Long description"
-                      name="description"
-                      multiline
-                      rows={4}
-                      placeholder="Full product description"
-                      value={formik.values.description}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                    />
-                    <TextField
-                      fullWidth
-                      label="Size info / fit notes"
-                      name="sizeInfo"
-                      placeholder="e.g. Regular fit, model is 180cm wearing size M"
-                      value={formik.values.sizeInfo}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                    />
-                    <Box>
-                      <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                        Size chart image
-                      </Typography>
-                      <ImageUpload
-                        label="Size chart"
-                        value={formik.values.sizeChart}
-                        onChange={(url) => formik.setFieldValue('sizeChart', url)}
-                      />
-                    </Box>
-                    <TextField
-                      fullWidth
-                      label="Features (one per line)"
-                      name="featuresText"
-                      multiline
-                      rows={3}
-                      placeholder={'Breathable fabric\nMoisture-wicking\nDurable stitching'}
-                      value={formik.values.featuresText}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                    />
-                  </Stack>
-                </Stack>
-              </CardContent>
-            </Card>
+        <Stack spacing={3}>
+          <Card>
+            <CardContent>
+              <Stack spacing={3}>
+                <Typography variant="h6">Product details</Typography>
+                <TextField
+                  fullWidth
+                  label="Name"
+                  name="name"
+                  value={formik.values.name}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.name && Boolean(formik.errors.name)}
+                  helperText={formik.touched.name && formik.errors.name}
+                  required
+                />
+                <TextField
+                  fullWidth
+                  label="Short description"
+                  name="shortDescription"
+                  placeholder="Brief summary (e.g. for listings, meta)"
+                  value={formik.values.shortDescription}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+                <TextField
+                  fullWidth
+                  label="Long description"
+                  name="description"
+                  multiline
+                  rows={4}
+                  placeholder="Full product description"
+                  value={formik.values.description}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+                <TextField
+                  fullWidth
+                  label="Size info / fit notes"
+                  name="sizeInfo"
+                  placeholder="e.g. Regular fit, model is 180cm wearing size M"
+                  value={formik.values.sizeInfo}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+                <Box>
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    Size chart image
+                  </Typography>
+                  <ImageUpload
+                    label="Size chart"
+                    value={formik.values.sizeChart}
+                    onChange={(url) => formik.setFieldValue('sizeChart', url)}
+                  />
+                </Box>
+                <TextField
+                  fullWidth
+                  label="Features (one per line)"
+                  name="featuresText"
+                  multiline
+                  rows={3}
+                  placeholder={'Breathable fabric\nMoisture-wicking\nDurable stitching'}
+                  value={formik.values.featuresText}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+              </Stack>
+            </CardContent>
+          </Card>
 
-            <Box sx={{ mt: 3 }}>
-              <Card>
-                <CardContent>
-                  <Stack spacing={2}>
-                    <Typography variant="h6">Attributes</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Add extra info like color, material, collection, etc.
-                    </Typography>
-                    <Stack spacing={2}>
-                      {(formik.values.attributes || []).map((attr, index) => (
-                        <Box key={index} sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-                          <Stack spacing={2}>
-                            <TextField
-                              fullWidth
-                              label="Attribute name"
-                              placeholder="Color"
-                              value={attr.name || ''}
-                              onChange={(e) =>
-                                formik.setFieldValue(
-                                  `attributes[${index}].name`,
-                                  e.target.value,
-                                )
-                              }
-                            />
-                            <TextField
-                              fullWidth
-                              label="Attribute value"
-                              placeholder="Black"
-                              value={attr.value || ''}
-                              onChange={(e) =>
-                                formik.setFieldValue(
-                                  `attributes[${index}].value`,
-                                  e.target.value,
-                                )
-                              }
-                            />
-                            <Box>
-                              <Button
-                                color="error"
-                                variant="outlined"
-                                onClick={() => {
-                                  const next = [...(formik.values.attributes || [])];
-                                  next.splice(index, 1);
-                                  formik.setFieldValue('attributes', next);
-                                }}
-                              >
-                                Remove attribute
-                              </Button>
-                            </Box>
-                          </Stack>
-                        </Box>
-                      ))}
-                      <Box>
-                        <Button
-                          variant="outlined"
-                          onClick={() =>
-                            formik.setFieldValue('attributes', [
-                              ...(formik.values.attributes || []),
-                              { name: '', value: '' },
-                            ])
+          <Card>
+            <CardContent>
+              <Stack spacing={2}>
+                <Typography variant="h6">Attributes</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Add extra info like color, material, collection, etc.
+                </Typography>
+                <Stack spacing={2}>
+                  {(formik.values.attributes || []).map((attr, index) => (
+                    <Box key={index} sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
+                      <Stack spacing={2}>
+                        <TextField
+                          fullWidth
+                          label="Attribute name"
+                          placeholder="Color"
+                          value={attr.name || ''}
+                          onChange={(e) =>
+                            formik.setFieldValue(
+                              `attributes[${index}].name`,
+                              e.target.value,
+                            )
                           }
-                        >
-                          Add attribute
-                        </Button>
-                      </Box>
-                    </Stack>
-                  </Stack>
-                </CardContent>
-              </Card>
-            </Box>
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <Stack spacing={3}>
-              <Card>
-                <CardContent>
-                  <Stack spacing={3}>
-                    <Typography variant="h6">Images</Typography>
-                    <ImageUpload
-                      label="Featured image"
-                      value={formik.values.featuredImage}
-                      onChange={(url) => formik.setFieldValue('featuredImage', url)}
-                    />
-                    <ImageGalleryUpload
-                      label="Product gallery"
-                      value={formik.values.gallery}
-                      onChange={(urls) => formik.setFieldValue('gallery', urls)}
-                      max={10}
-                    />
-                  </Stack>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent>
-                  <Stack spacing={2}>
-                    <Typography variant="h6">Pricing & status</Typography>
-                    <TextField
-                      fullWidth
-                      select
-                      label="Category"
-                      name="category"
-                      value={formik.values.category}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      error={formik.touched.category && Boolean(formik.errors.category)}
-                      helperText={formik.touched.category && formik.errors.category}
-                      required
+                        />
+                        <TextField
+                          fullWidth
+                          label="Attribute value"
+                          placeholder="Black"
+                          value={attr.value || ''}
+                          onChange={(e) =>
+                            formik.setFieldValue(
+                              `attributes[${index}].value`,
+                              e.target.value,
+                            )
+                          }
+                        />
+                        <Box>
+                          <Button
+                            color="error"
+                            variant="outlined"
+                            onClick={() => {
+                              const next = [...(formik.values.attributes || [])];
+                              next.splice(index, 1);
+                              formik.setFieldValue('attributes', next);
+                            }}
+                          >
+                            Remove attribute
+                          </Button>
+                        </Box>
+                      </Stack>
+                    </Box>
+                  ))}
+                  <Box>
+                    <Button
+                      variant="outlined"
+                      onClick={() =>
+                        formik.setFieldValue('attributes', [
+                          ...(formik.values.attributes || []),
+                          { name: '', value: '' },
+                        ])
+                      }
                     >
-                      {categories.map((cat) => (
-                        <MenuItem key={cat._id} value={cat._id}>
-                          {cat.name}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                    <TextField
-                      fullWidth
-                      select
-                      label="Brand (Optional)"
-                      name="brand"
-                      value={formik.values.brand}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                    >
-                      <MenuItem value="">None</MenuItem>
-                      {brands.map((brand) => (
-                        <MenuItem key={brand._id} value={brand._id}>
-                          {brand.name}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                    <TextField
-                      fullWidth
-                      label="Price"
-                      name="price"
-                      type="number"
-                      value={formik.values.price}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      error={formik.touched.price && Boolean(formik.errors.price)}
-                      helperText={formik.touched.price && formik.errors.price}
-                      required
-                    />
-                    <TextField
-                      fullWidth
-                      label="Discount (%)"
-                      name="discountPercentage"
-                      type="number"
-                      inputProps={{ min: 0, max: 100, step: 1 }}
-                      value={formik.values.discountPercentage}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      helperText="Optional. Leave empty for no discount."
-                    />
-                    <TextField
-                      fullWidth
-                      select
-                      label="Status"
-                      name="isActive"
-                      value={formik.values.isActive}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                    >
-                      <MenuItem value={true}>Active</MenuItem>
-                      <MenuItem value={false}>Inactive</MenuItem>
-                    </TextField>
-                  </Stack>
-                </CardContent>
-              </Card>
+                      Add attribute
+                    </Button>
+                  </Box>
+                </Stack>
+              </Stack>
+            </CardContent>
+          </Card>
 
-              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                <Button
-                  variant="outlined"
-                  onClick={() => navigate('/products')}
+          <Card>
+            <CardContent>
+              <Stack spacing={3}>
+                <Typography variant="h6">Images</Typography>
+                <ImageUpload
+                  label="Featured image"
+                  value={formik.values.featuredImage}
+                  onChange={(url) => formik.setFieldValue('featuredImage', url)}
+                />
+                <ImageGalleryUpload
+                  label="Product gallery"
+                  value={formik.values.gallery}
+                  onChange={(urls) => formik.setFieldValue('gallery', urls)}
+                  max={10}
+                />
+              </Stack>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent>
+              <Stack spacing={2}>
+                <Typography variant="h6">Pricing & status</Typography>
+                <TextField
+                  fullWidth
+                  select
+                  label="Category"
+                  name="category"
+                  value={formik.values.category}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.category && Boolean(formik.errors.category)}
+                  helperText={formik.touched.category && formik.errors.category}
+                  required
                 >
-                  Cancel
-                </Button>
-                <Button type="submit" variant="contained">
-                  {isEdit ? 'Update' : 'Create'}
-                </Button>
-              </Box>
-            </Stack>
-          </Grid>
-        </Grid>
+                  {categories.map((cat) => (
+                    <MenuItem key={cat._id} value={cat._id}>
+                      {cat.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                <TextField
+                  fullWidth
+                  select
+                  label="Brand (Optional)"
+                  name="brand"
+                  value={formik.values.brand}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                >
+                  <MenuItem value="">None</MenuItem>
+                  {brands.map((brand) => (
+                    <MenuItem key={brand._id} value={brand._id}>
+                      {brand.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                <TextField
+                  fullWidth
+                  label="Price"
+                  name="price"
+                  type="number"
+                  value={formik.values.price}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.price && Boolean(formik.errors.price)}
+                  helperText={formik.touched.price && formik.errors.price}
+                  required
+                />
+                <TextField
+                  fullWidth
+                  label="Discount (%)"
+                  name="discountPercentage"
+                  type="number"
+                  inputProps={{ min: 0, max: 100, step: 1 }}
+                  value={formik.values.discountPercentage}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  helperText="Optional. Leave empty for no discount."
+                />
+                <TextField
+                  fullWidth
+                  select
+                  label="Status"
+                  name="isActive"
+                  value={formik.values.isActive}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                >
+                  <MenuItem value={true}>Active</MenuItem>
+                  <MenuItem value={false}>Inactive</MenuItem>
+                </TextField>
+              </Stack>
+            </CardContent>
+          </Card>
+
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+            <Button
+              variant="outlined"
+              onClick={() => navigate('/products')}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained">
+              {isEdit ? 'Update' : 'Create'}
+            </Button>
+          </Box>
+        </Stack>
       </form>
     </MainCard>
   );
