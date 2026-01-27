@@ -9,6 +9,7 @@ import {
   Card,
   CardContent,
   Stack,
+  Grid,
 } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import MainCard from 'components/MainCard';
@@ -115,56 +116,64 @@ export default function StockFormPage() {
         <CardContent>
           <form onSubmit={formik.handleSubmit}>
             <Stack spacing={3}>
-              <TextField
-                fullWidth
-                select
-                label="Product"
-                name="product"
-                value={formik.values.product}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.product && Boolean(formik.errors.product)}
-                helperText={formik.touched.product && formik.errors.product}
-                disabled={!!isEdit}
-                required
-              >
-                {products.map((product) => (
-                  <MenuItem key={product._id} value={product._id}>
-                    {product.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-              <TextField
-                fullWidth
-                select
-                label="Size"
-                name="size"
-                value={formik.values.size}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.size && Boolean(formik.errors.size)}
-                helperText={formik.touched.size && formik.errors.size}
-                disabled={!!isEdit}
-                required
-              >
-                {sizes.map((size) => (
-                  <MenuItem key={size._id} value={size._id}>
-                    {size.label} ({size.sizeType?.name || ''})
-                  </MenuItem>
-                ))}
-              </TextField>
-              <TextField
-                fullWidth
-                label="Stock Quantity"
-                name="stockQty"
-                type="number"
-                value={formik.values.stockQty}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.stockQty && Boolean(formik.errors.stockQty)}
-                helperText={formik.touched.stockQty && formik.errors.stockQty}
-                required
-              />
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    select
+                    label="Product"
+                    name="product"
+                    value={formik.values.product}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.product && Boolean(formik.errors.product)}
+                    helperText={formik.touched.product && formik.errors.product}
+                    disabled={!!isEdit}
+                    required
+                  >
+                    {products.map((product) => (
+                      <MenuItem key={product._id} value={product._id}>
+                        {product.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    select
+                    label="Size"
+                    name="size"
+                    value={formik.values.size}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.size && Boolean(formik.errors.size)}
+                    helperText={formik.touched.size && formik.errors.size}
+                    disabled={!!isEdit}
+                    required
+                  >
+                    {sizes.map((size) => (
+                      <MenuItem key={size._id} value={size._id}>
+                        {size.label} ({size.sizeType?.name || ''})
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <TextField
+                    fullWidth
+                    label="Stock Quantity"
+                    name="stockQty"
+                    type="number"
+                    value={formik.values.stockQty}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.stockQty && Boolean(formik.errors.stockQty)}
+                    helperText={formik.touched.stockQty && formik.errors.stockQty}
+                    required
+                  />
+                </Grid>
+              </Grid>
               <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
                 <Button
                   variant="outlined"

@@ -9,6 +9,7 @@ import {
   Card,
   CardContent,
   Stack,
+  Grid,
 } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import MainCard from 'components/MainCard';
@@ -132,60 +133,70 @@ export default function SizeFormPage() {
           <form onSubmit={formik.handleSubmit}>
             <Stack spacing={3}>
               {isSizeType ? (
-                <TextField
-                  fullWidth
-                  label="Name"
-                  name="name"
-                  value={formik.values.name}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.name && Boolean(formik.errors.name)}
-                  helperText={formik.touched.name && formik.errors.name}
-                  placeholder="UK, EU, Alpha, Free"
-                  required
-                />
+                <Grid container spacing={2}>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Name"
+                      name="name"
+                      value={formik.values.name}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      error={formik.touched.name && Boolean(formik.errors.name)}
+                      helperText={formik.touched.name && formik.errors.name}
+                      placeholder="UK, EU, Alpha, Free"
+                      required
+                    />
+                  </Grid>
+                </Grid>
               ) : (
-                <>
-                  <TextField
-                    fullWidth
-                    select
-                    label="Size Type"
-                    name="sizeType"
-                    value={formik.values.sizeType}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={formik.touched.sizeType && Boolean(formik.errors.sizeType)}
-                    helperText={formik.touched.sizeType && formik.errors.sizeType}
-                    required
-                  >
-                    {sizeTypes.map((st) => (
-                      <MenuItem key={st._id} value={st._id}>
-                        {st.name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                  <TextField
-                    fullWidth
-                    label="Label"
-                    name="label"
-                    value={formik.values.label}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={formik.touched.label && Boolean(formik.errors.label)}
-                    helperText={formik.touched.label && formik.errors.label}
-                    placeholder="7, 42, S, M, L, Free"
-                    required
-                  />
-                  <TextField
-                    fullWidth
-                    label="Sort Order"
-                    name="sortOrder"
-                    type="number"
-                    value={formik.values.sortOrder}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  />
-                </>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      select
+                      label="Size Type"
+                      name="sizeType"
+                      value={formik.values.sizeType}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      error={formik.touched.sizeType && Boolean(formik.errors.sizeType)}
+                      helperText={formik.touched.sizeType && formik.errors.sizeType}
+                      required
+                    >
+                      {sizeTypes.map((st) => (
+                        <MenuItem key={st._id} value={st._id}>
+                          {st.name}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Label"
+                      name="label"
+                      value={formik.values.label}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      error={formik.touched.label && Boolean(formik.errors.label)}
+                      helperText={formik.touched.label && formik.errors.label}
+                      placeholder="7, 42, S, M, L, Free"
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Sort Order"
+                      name="sortOrder"
+                      type="number"
+                      value={formik.values.sortOrder}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                    />
+                  </Grid>
+                </Grid>
               )}
               <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
                 <Button

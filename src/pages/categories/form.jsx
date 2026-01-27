@@ -9,6 +9,7 @@ import {
   Card,
   CardContent,
   Stack,
+  Grid,
 } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import MainCard from 'components/MainCard';
@@ -95,37 +96,46 @@ export default function CategoryFormPage() {
         <CardContent>
           <form onSubmit={formik.handleSubmit}>
             <Stack spacing={3}>
-              <TextField
-                fullWidth
-                label="Name"
-                name="name"
-                value={formik.values.name}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.name && Boolean(formik.errors.name)}
-                helperText={formik.touched.name && formik.errors.name}
-                required
-              />
-              <TextField
-                fullWidth
-                label="Slug (Optional)"
-                name="slug"
-                value={formik.values.slug}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              />
-              <TextField
-                fullWidth
-                select
-                label="Status"
-                name="isActive"
-                value={formik.values.isActive}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              >
-                <MenuItem value={true}>Active</MenuItem>
-                <MenuItem value={false}>Inactive</MenuItem>
-              </TextField>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Name"
+                    name="name"
+                    value={formik.values.name}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.name && Boolean(formik.errors.name)}
+                    helperText={formik.touched.name && formik.errors.name}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Slug (Optional)"
+                    name="slug"
+                    value={formik.values.slug}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    helperText="Leave empty to auto-generate from name."
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    select
+                    label="Status"
+                    name="isActive"
+                    value={formik.values.isActive}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                  >
+                    <MenuItem value={true}>Active</MenuItem>
+                    <MenuItem value={false}>Inactive</MenuItem>
+                  </TextField>
+                </Grid>
+              </Grid>
               <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
                 <Button
                   variant="outlined"
