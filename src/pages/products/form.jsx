@@ -61,6 +61,16 @@ export default function ProductFormPage() {
         name: product.name || '',
         shortDescription: product.shortDescription || '',
         description: product.description || '',
+        sizeInfo: product.sizeInfo || '',
+        sizeChart: product.sizeChart || '',
+        discountPercentage:
+          typeof product.discountPercentage === 'number'
+            ? String(product.discountPercentage)
+            : '',
+        attributes: product.attributes || [],
+        featuresText: Array.isArray(product.features)
+          ? product.features.join('\n')
+          : '',
         category: product.category?._id || product.category || '',
         brand: product.brand?._id || product.brand || '',
         price: product.price || '',
@@ -82,6 +92,11 @@ export default function ProductFormPage() {
       name: '',
       shortDescription: '',
       description: '',
+      sizeInfo: '',
+      sizeChart: '',
+      discountPercentage: '',
+      attributes: [],
+      featuresText: '',
       category: '',
       brand: '',
       price: '',
@@ -92,12 +107,31 @@ export default function ProductFormPage() {
     validationSchema,
     onSubmit: async (values) => {
       try {
+        const { featuresText, ...rest } = values;
+        const features = (featuresText || '')
+          .split('\n')
+          .map((line) => line.trim())
+          .filter(Boolean);
+
         const data = {
-          ...values,
-          price: parseFloat(values.price),
-          brand: values.brand || undefined,
-          featuredImage: values.featuredImage || undefined,
-          gallery: values.gallery?.length ? values.gallery : undefined,
+          ...rest,
+          price: parseFloat(rest.price),
+          discountPercentage:
+            rest.discountPercentage !== ''
+              ? parseFloat(rest.discountPercentage)
+              : undefined,
+          brand: rest.brand || undefined,
+          featuredImage: rest.featuredImage || undefined,
+          gallery: rest.gallery?.length ? rest.gallery : undefined,
+          sizeInfo: rest.sizeInfo || undefined,
+          sizeChart: rest.sizeChart || undefined,
+          attributes:
+            rest.attributes && rest.attributes.length
+              ? rest.attributes.filter(
+                  (attr) => attr.name?.trim() && attr.value?.trim(),
+                )
+              : undefined,
+          features: features.length ? features : undefined,
         };
         if (isEdit) {
           await productsApi.update(id, data);
@@ -166,6 +200,91 @@ export default function ProductFormPage() {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
+              <TextField
+                fullWidth
+                label="Size info / fit notes"
+                name="sizeInfo"
+                placeholder="e.g. Regular fit, model is 180cm wearing size M"
+                value={formik.values.sizeInfo}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                Size chart image
+              </Typography>
+              <ImageUpload
+                label="Size chart"
+                value={formik.values.sizeChart}
+                onChange={(url) => formik.setFieldValue('sizeChart', url)}
+              />
+              <TextField
+                fullWidth
+                label="Features (one per line)"
+                name="featuresText"
+                multiline
+                rows={4}
+                placeholder={'Breathable fabric\nMoisture-wicking\nDurable stitching'}
+                value={formik.values.featuresText}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              <Divider sx={{ my: 1 }} />
+              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                Attributes (e.g. Color, Material)
+              </Typography>
+              <Stack spacing={1}>
+                {(formik.values.attributes || []).map((attr, index) => (
+                  <Stack direction="row" spacing={2} key={index}>
+                    <TextField
+                      fullWidth
+                      label="Name"
+                      placeholder="Color"
+                      value={attr.name || ''}
+                      onChange={(e) =>
+                        formik.setFieldValue(
+                          `attributes[${index}].name`,
+                          e.target.value,
+                        )
+                      }
+                    />
+                    <TextField
+                      fullWidth
+                      label="Value"
+                      placeholder="Black"
+                      value={attr.value || ''}
+                      onChange={(e) =>
+                        formik.setFieldValue(
+                          `attributes[${index}].value`,
+                          e.target.value,
+                        )
+                      }
+                    />
+                    <Button
+                      color="error"
+                      onClick={() => {
+                        const next = [...(formik.values.attributes || [])];
+                        next.splice(index, 1);
+                        formik.setFieldValue('attributes', next);
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  </Stack>
+                ))}
+                <Box>
+                  <Button
+                    variant="outlined"
+                    onClick={() =>
+                      formik.setFieldValue('attributes', [
+                        ...(formik.values.attributes || []),
+                        { name: '', value: '' },
+                      ])
+                    }
+                  >
+                    Add attribute
+                  </Button>
+                </Box>
+              </Stack>
               <Divider sx={{ my: 1 }} />
               <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                 Images
@@ -227,6 +346,17 @@ export default function ProductFormPage() {
                 error={formik.touched.price && Boolean(formik.errors.price)}
                 helperText={formik.touched.price && formik.errors.price}
                 required
+              />
+              <TextField
+                fullWidth
+                label="Discount (%)"
+                name="discountPercentage"
+                type="number"
+                inputProps={{ min: 0, max: 100, step: 1 }}
+                value={formik.values.discountPercentage}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                helperText="Optional. Leave empty for no discount."
               />
               <TextField
                 fullWidth
