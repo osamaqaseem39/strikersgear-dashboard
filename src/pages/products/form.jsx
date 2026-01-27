@@ -9,9 +9,12 @@ import {
   Card,
   CardContent,
   Stack,
+  Divider,
 } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import MainCard from 'components/MainCard';
+import ImageUpload from 'components/ImageUpload';
+import ImageGalleryUpload from 'components/ImageGalleryUpload';
 import { productsApi, categoriesApi, brandsApi } from 'api/api';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -56,11 +59,13 @@ export default function ProductFormPage() {
       const product = await productsApi.getById(id);
       formik.setValues({
         name: product.name || '',
+        shortDescription: product.shortDescription || '',
         description: product.description || '',
         category: product.category?._id || product.category || '',
         brand: product.brand?._id || product.brand || '',
         price: product.price || '',
-        images: product.images || [],
+        featuredImage: product.featuredImage || '',
+        gallery: product.gallery || [],
         isActive: product.isActive !== false,
       });
     } catch (error) {
@@ -75,11 +80,13 @@ export default function ProductFormPage() {
   const formik = useFormik({
     initialValues: {
       name: '',
+      shortDescription: '',
       description: '',
       category: '',
       brand: '',
       price: '',
-      images: [],
+      featuredImage: '',
+      gallery: [],
       isActive: true,
     },
     validationSchema,
@@ -89,6 +96,8 @@ export default function ProductFormPage() {
           ...values,
           price: parseFloat(values.price),
           brand: values.brand || undefined,
+          featuredImage: values.featuredImage || undefined,
+          gallery: values.gallery?.length ? values.gallery : undefined,
         };
         if (isEdit) {
           await productsApi.update(id, data);
@@ -139,14 +148,40 @@ export default function ProductFormPage() {
               />
               <TextField
                 fullWidth
-                label="Description"
+                label="Short description"
+                name="shortDescription"
+                placeholder="Brief summary (e.g. for listings, meta)"
+                value={formik.values.shortDescription}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              <TextField
+                fullWidth
+                label="Long description"
                 name="description"
                 multiline
-                rows={3}
+                rows={5}
+                placeholder="Full product description (WooCommerce-style)"
                 value={formik.values.description}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
+              <Divider sx={{ my: 1 }} />
+              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                Images
+              </Typography>
+              <ImageUpload
+                label="Featured image"
+                value={formik.values.featuredImage}
+                onChange={(url) => formik.setFieldValue('featuredImage', url)}
+              />
+              <ImageGalleryUpload
+                label="Product gallery"
+                value={formik.values.gallery}
+                onChange={(urls) => formik.setFieldValue('gallery', urls)}
+                max={10}
+              />
+              <Divider sx={{ my: 1 }} />
               <TextField
                 fullWidth
                 select

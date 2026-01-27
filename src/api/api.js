@@ -1,14 +1,41 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://strikersgear-api.vercel.app';
+const UPLOAD_URL = import.meta.env.VITE_UPLOAD_URL || 'https://fl.osamaqaseem.online/upload.php';
+
+/**
+ * Upload image file to upload.php (cPanel). Returns the image URL.
+ * Set VITE_UPLOAD_URL to your upload.php endpoint, e.g. https://yourdomain.com/upload.php
+ * Response format: { success, message, data: { url, filename, ... } }
+ */
+export async function uploadImage(file) {
+  if (!UPLOAD_URL) {
+    throw new Error('VITE_UPLOAD_URL is not set. Configure it to your upload.php endpoint.');
+  }
+  const endpoint = UPLOAD_URL.replace(/\/$/, '');
+  const formData = new FormData();
+  formData.append('file', file);
+  const res = await fetch(endpoint, { method: 'POST', body: formData });
+  const data = await res.json();
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || data.error || 'Upload failed');
+  }
+  const url = data.data?.url ?? data.url;
+  if (!url) throw new Error('Upload response missing URL');
+  return url;
+}
 
 const apiRequest = async (endpoint, options = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    ...options,
+  const headers = {
+    'Content-Type': 'application/json',
+    ...options.headers,
   };
+
+  const token = typeof localStorage !== 'undefined' ? localStorage.getItem('admin_token') : null;
+  if (token && !endpoint.startsWith('/auth/')) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const config = { ...options, headers };
 
   if (config.body && typeof config.body === 'object') {
     config.body = JSON.stringify(config.body);
@@ -16,7 +43,13 @@ const apiRequest = async (endpoint, options = {}) => {
 
   try {
     const response = await fetch(url, config);
-    const data = await response.json();
+    const data = await response.json().catch(() => ({}));
+
+    if (response.status === 401) {
+      if (typeof localStorage !== 'undefined') localStorage.removeItem('admin_token');
+      window.location.href = '/login';
+      throw new Error(data.message || 'Unauthorized');
+    }
     if (!response.ok) {
       throw new Error(data.message || 'API request failed');
     }
@@ -94,5 +127,7 @@ export const ordersApi = {
 
 // Auth
 export const authApi = {
+  getStatus: () => apiRequest('/auth/status'),
+  register: (password) => apiRequest('/auth/register', { method: 'POST', body: { password } }),
   login: (password) => apiRequest('/auth/login', { method: 'POST', body: { password } }),
 };
