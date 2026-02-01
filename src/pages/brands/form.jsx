@@ -4,12 +4,12 @@ import {
   Box,
   Button,
   TextField,
-  MenuItem,
   Typography,
   Card,
   CardContent,
   Stack,
-  Grid,
+  FormControlLabel,
+  Switch,
 } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import MainCard from 'components/MainCard';
@@ -93,6 +93,7 @@ export default function BrandFormPage() {
       <Box sx={{ mb: 2 }}>
         <Button
           startIcon={<ArrowBack />}
+          variant="outlined"
           onClick={() => navigate('/brands')}
         >
           Back to Brands
@@ -100,79 +101,75 @@ export default function BrandFormPage() {
       </Box>
 
       <form onSubmit={formik.handleSubmit}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={8}>
-            <Card>
-              <CardContent>
-                <Stack spacing={3}>
-                  <Typography variant="h6">Brand details</Typography>
-                  <TextField
-                    fullWidth
-                    label="Name"
-                    name="name"
-                    value={formik.values.name}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={formik.touched.name && Boolean(formik.errors.name)}
-                    helperText={formik.touched.name && formik.errors.name}
-                    required
-                  />
-                  <TextField
-                    fullWidth
-                    label="Slug (Optional)"
-                    name="slug"
-                    value={formik.values.slug}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    helperText="Leave empty to auto-generate from name."
-                  />
-                  <TextField
-                    fullWidth
-                    select
-                    label="Status"
-                    name="isActive"
-                    value={formik.values.isActive}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  >
-                    <MenuItem value={true}>Active</MenuItem>
-                    <MenuItem value={false}>Inactive</MenuItem>
-                  </TextField>
-                </Stack>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <Card>
-              <CardContent>
-                <Stack spacing={2}>
-                  <Typography variant="h6">Brand logo</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Upload an optional logo or brand image.
-                  </Typography>
-                  <ImageUpload
-                    label="Brand image"
-                    value={formik.values.image}
-                    onChange={(url) => formik.setFieldValue('image', url)}
-                  />
-                </Stack>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12}>
-            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-              <Button
-                variant="outlined"
-                onClick={() => navigate('/brands')}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" variant="contained">
-                {isEdit ? 'Update' : 'Create'}
-              </Button>
-            </Box>
-          </Grid>
-        </Grid>
+        <Stack spacing={3}>
+          <Card variant="outlined" sx={{ overflow: 'visible' }}>
+            <CardContent>
+              <Stack spacing={3}>
+                <Typography variant="h6" color="text.primary">
+                  Brand details
+                </Typography>
+                <TextField
+                  fullWidth
+                  label="Name"
+                  name="name"
+                  value={formik.values.name}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.name && Boolean(formik.errors.name)}
+                  helperText={formik.touched.name && formik.errors.name}
+                  required
+                />
+                <TextField
+                  fullWidth
+                  label="Slug (optional)"
+                  name="slug"
+                  value={formik.values.slug}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  helperText="Leave empty to auto-generate from name."
+                />
+                <FormControlLabel
+                  control={
+                    <Switch
+                      name="isActive"
+                      checked={formik.values.isActive}
+                      onChange={formik.handleChange}
+                      color="primary"
+                    />
+                  }
+                  label="Active"
+                />
+              </Stack>
+            </CardContent>
+          </Card>
+
+          <Card variant="outlined" sx={{ overflow: 'visible' }}>
+            <CardContent>
+              <Stack spacing={2}>
+                <Typography variant="h6" color="text.primary">
+                  Brand logo
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Upload an optional logo or brand image.
+                </Typography>
+                <ImageUpload
+                  label="Brand image"
+                  value={formik.values.image}
+                  onChange={(url) => formik.setFieldValue('image', url)}
+                />
+              </Stack>
+            </CardContent>
+          </Card>
+
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+            <Button variant="outlined" onClick={() => navigate('/brands')}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained">
+              {isEdit ? 'Update' : 'Create'}
+            </Button>
+          </Box>
+        </Stack>
       </form>
     </MainCard>
   );

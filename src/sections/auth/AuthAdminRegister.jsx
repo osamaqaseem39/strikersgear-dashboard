@@ -50,9 +50,7 @@ export default function AuthAdminRegister() {
         } catch (err) {
           const msg = err.message || 'Registration failed';
           setFieldError('submit', msg);
-          if (msg.toLowerCase().includes('already registered')) {
-            navigate('/login', { replace: true });
-          }
+          // If backend says admin already exists, stay on same page; next load will show login
         } finally {
           setSubmitting(false);
         }

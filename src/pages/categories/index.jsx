@@ -63,6 +63,7 @@ export default function CategoriesPage() {
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Slug</TableCell>
+              <TableCell>Parent</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
@@ -71,7 +72,10 @@ export default function CategoriesPage() {
             {categories.map((category) => (
               <TableRow key={category._id}>
                 <TableCell>{category.name}</TableCell>
-                <TableCell>{category.slug || 'N/A'}</TableCell>
+                <TableCell>{category.slug || '—'}</TableCell>
+                <TableCell>
+                  {category.parent?.name ?? '—'}
+                </TableCell>
                 <TableCell>
                   <Chip
                     label={category.isActive ? 'Active' : 'Inactive'}
