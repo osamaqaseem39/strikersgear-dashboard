@@ -11,6 +11,8 @@ const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/default')))
 // render - ecommerce
 const ProductsPage = Loadable(lazy(() => import('pages/products')));
 const ProductFormPage = Loadable(lazy(() => import('pages/products/form')));
+const BannersPage = Loadable(lazy(() => import('pages/banners')));
+const BannerFormPage = Loadable(lazy(() => import('pages/banners/form')));
 const StockPage = Loadable(lazy(() => import('pages/stock')));
 const StockFormPage = Loadable(lazy(() => import('pages/stock/form')));
 const OrdersPage = Loadable(lazy(() => import('pages/orders')));
@@ -100,6 +102,23 @@ const MainRoutes = {
         {
           path: ':id/edit',
           element: <BrandFormPage />
+        }
+      ]
+    },
+    {
+      path: 'banners',
+      children: [
+        {
+          index: true,
+          element: <BannersPage />
+        },
+        {
+          path: 'new',
+          element: <BannerFormPage />
+        },
+        {
+          path: ':id/edit',
+          element: <BannerFormPage />
         }
       ]
     },

@@ -106,6 +106,15 @@ export const productsApi = {
   removeImage: (id, imageUrl) => apiRequest(`/products/${id}/images`, { method: 'DELETE', body: { imageUrl } }),
 };
 
+// Banners
+export const bannersApi = {
+  getAll: (activeOnly = false) => apiRequest(`/banners?activeOnly=${activeOnly}`),
+  getById: (id) => apiRequest(`/banners/${id}`),
+  create: (data) => apiRequest('/banners', { method: 'POST', body: data }),
+  update: (id, data) => apiRequest(`/banners/${id}`, { method: 'PATCH', body: data }),
+  delete: (id) => apiRequest(`/banners/${id}`, { method: 'DELETE' }),
+};
+
 // Stock
 export const stockApi = {
   getAll: (productId) => apiRequest(`/stock${productId ? `?productId=${productId}` : ''}`),

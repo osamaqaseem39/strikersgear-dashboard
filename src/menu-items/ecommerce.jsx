@@ -6,6 +6,7 @@ import {
   AppstoreOutlined,
   TagOutlined,
   OrderedListOutlined,
+  PictureOutlined,
 } from '@ant-design/icons';
 
 // icons
@@ -16,6 +17,7 @@ const icons = {
   AppstoreOutlined,
   TagOutlined,
   OrderedListOutlined,
+  PictureOutlined,
 };
 
 // ==============================|| MENU ITEMS - ECOMMERCE ||============================== //
@@ -71,6 +73,14 @@ const ecommerce = {
       type: 'item',
       url: '/sizes',
       icon: icons.OrderedListOutlined,
+      breadcrumbs: false,
+    },
+    {
+      id: 'banners',
+      title: 'Banners',
+      type: 'item',
+      url: '/banners',
+      icon: icons.PictureOutlined,
       breadcrumbs: false,
     },
   ],
