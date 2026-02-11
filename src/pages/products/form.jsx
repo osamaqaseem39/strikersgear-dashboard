@@ -11,12 +11,19 @@ import {
   Stack,
   Divider,
   Grid,
+  Tabs,
+  Tab,
+  FormControl,
+  InputLabel,
+  Select,
+  Checkbox,
+  ListItemText,
 } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import MainCard from 'components/MainCard';
 import ImageUpload from 'components/ImageUpload';
 import ImageGalleryUpload from 'components/ImageGalleryUpload';
-import { productsApi, categoriesApi, brandsApi } from 'api/api';
+import { productsApi, categoriesApi, brandsApi, sizesApi } from 'api/api';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
@@ -33,6 +40,8 @@ export default function ProductFormPage() {
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(isEdit);
+  const [sizes, setSizes] = useState([]);
+  const [tab, setTab] = useState(0);
 
   useEffect(() => {
     loadData();
@@ -43,12 +52,14 @@ export default function ProductFormPage() {
 
   const loadData = async () => {
     try {
-      const [categoriesData, brandsData] = await Promise.all([
+      const [categoriesData, brandsData, sizesData] = await Promise.all([
         categoriesApi.getAll(),
         brandsApi.getAll(),
+        sizesApi.getAll(),
       ]);
       setCategories(categoriesData);
       setBrands(brandsData);
+      setSizes(sizesData || []);
     } catch (error) {
       console.error('Error loading data:', error);
     }
@@ -91,8 +102,8 @@ export default function ProductFormPage() {
         reviews:
           typeof product.reviews === 'number' ? String(product.reviews) : '',
         availableSizes: Array.isArray(product.availableSizes)
-          ? product.availableSizes.join(', ')
-          : '',
+        ? product.availableSizes
+        : [],
         colors: Array.isArray(product.colors)
           ? product.colors.join(', ')
           : '',
@@ -143,7 +154,7 @@ export default function ProductFormPage() {
       isNew: false,
       rating: '',
       reviews: '',
-      availableSizes: '',
+      availableSizes: [],
       colors: '',
       bodyType: '',
       tags: '',
@@ -184,12 +195,10 @@ export default function ProductFormPage() {
           gallery: rest.gallery?.length ? rest.gallery : undefined,
           sizeInfo: rest.sizeInfo || undefined,
           sizeChartImageUrl: rest.sizeChartImageUrl || undefined,
-          availableSizes: rest.availableSizes
-            ? rest.availableSizes
-                .split(',')
-                .map((s) => s.trim())
-                .filter(Boolean)
-            : undefined,
+          availableSizes:
+            Array.isArray(rest.availableSizes) && rest.availableSizes.length
+              ? rest.availableSizes
+              : undefined,
           colors: rest.colors
             ? rest.colors
                 .split(',')
@@ -257,9 +266,23 @@ export default function ProductFormPage() {
         </Button>
       </Box>
 
+      <Tabs
+        value={tab}
+        onChange={(_, newValue) => setTab(newValue)}
+        variant="scrollable"
+        scrollButtons="auto"
+        sx={{ mb: 2, borderBottom: 1, borderColor: 'divider' }}
+      >
+        <Tab label="Basics" />
+        <Tab label="Images" />
+        <Tab label="Pricing & status" />
+        <Tab label="Inventory & badges" />
+        <Tab label="Sizes & tags" />
+      </Tabs>
+
       <form onSubmit={formik.handleSubmit}>
         <Stack spacing={3}>
-          <Card>
+          <Card sx={{ display: tab === 0 ? 'block' : 'none' }}>
             <CardContent>
               <Stack spacing={3}>
                 <Typography variant="h6">Product details</Typography>
@@ -339,7 +362,7 @@ export default function ProductFormPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card sx={{ display: tab === 0 ? 'block' : 'none' }}>
             <CardContent>
               <Stack spacing={2}>
                 <Typography variant="h6">Attributes</Typography>
@@ -408,7 +431,7 @@ export default function ProductFormPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card sx={{ display: tab === 1 ? 'block' : 'none' }}>
             <CardContent>
               <Stack spacing={3}>
                 <Typography variant="h6">Images</Typography>
@@ -427,7 +450,7 @@ export default function ProductFormPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card sx={{ display: tab === 2 ? 'block' : 'none' }}>
             <CardContent>
               <Stack spacing={2}>
                 <Typography variant="h6">Pricing & status</Typography>
@@ -538,7 +561,7 @@ export default function ProductFormPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card sx={{ display: tab === 3 ? 'block' : 'none' }}>
             <CardContent>
               <Stack spacing={2}>
                 <Typography variant="h6">Badges, ratings & inventory</Typography>
@@ -577,6 +600,8 @@ export default function ProductFormPage() {
                       value={formik.values.rating}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
+                      disabled
+                      helperText="Read-only; calculated from customer reviews on the storefront."
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -589,6 +614,8 @@ export default function ProductFormPage() {
                       value={formik.values.reviews}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
+                      disabled
+                      helperText="Read-only; number of customer reviews."
                     />
                   </Grid>
                 </Grid>
@@ -634,19 +661,34 @@ export default function ProductFormPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card sx={{ display: tab === 4 ? 'block' : 'none' }}>
             <CardContent>
               <Stack spacing={2}>
                 <Typography variant="h6">Variants & tags</Typography>
-                <TextField
-                  fullWidth
-                  label="Available sizes (comma separated)"
-                  name="availableSizes"
-                  placeholder="S, M, L, XL"
-                  value={formik.values.availableSizes}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                />
+                <FormControl fullWidth>
+                  <InputLabel id="available-sizes-label">Available sizes</InputLabel>
+                  <Select
+                    labelId="available-sizes-label"
+                    multiple
+                    value={formik.values.availableSizes}
+                    onChange={(event) =>
+                      formik.setFieldValue('availableSizes', event.target.value)
+                    }
+                    label="Available sizes"
+                    renderValue={(selected) => (selected || []).join(', ')}
+                  >
+                    {sizes.map((size) => (
+                      <MenuItem key={size._id} value={size.name}>
+                        <Checkbox
+                          checked={
+                            (formik.values.availableSizes || []).indexOf(size.name) > -1
+                          }
+                        />
+                        <ListItemText primary={size.name} />
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
                 <TextField
                   fullWidth
                   label="Colors (comma separated)"
