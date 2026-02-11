@@ -20,7 +20,7 @@ import * as yup from 'yup';
 
 const validationSchema = yup.object({
   title: yup.string().required('Title is required'),
-  image: yup.string().required('Banner image is required'),
+  image: yup.string().required('Hero banner image is required'),
 });
 
 export default function BannerFormPage() {
@@ -93,14 +93,14 @@ export default function BannerFormPage() {
 
   if (loading) {
     return (
-      <MainCard title={isEdit ? 'Edit Banner' : 'Add Banner'}>
+      <MainCard title={isEdit ? 'Edit Hero Banner' : 'Add Hero Banner'}>
         <Typography>Loading...</Typography>
       </MainCard>
     );
   }
 
   return (
-    <MainCard title={isEdit ? 'Edit Banner' : 'Add Banner'}>
+    <MainCard title={isEdit ? 'Edit Hero Banner' : 'Add Hero Banner'}>
       <Box sx={{ mb: 2 }}>
         <Button
           startIcon={<ArrowBack />}
@@ -117,7 +117,7 @@ export default function BannerFormPage() {
             <CardContent>
               <Stack spacing={3}>
                 <Typography variant="h6" color="text.primary">
-                  Banner content
+                  Hero banner content
                 </Typography>
                 <TextField
                   fullWidth
@@ -137,7 +137,7 @@ export default function BannerFormPage() {
                   value={formik.values.subtitle}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  helperText="Optional supporting text."
+                  helperText="Optional supporting text shown on the hero."
                 />
                 <TextField
                   fullWidth
@@ -146,7 +146,7 @@ export default function BannerFormPage() {
                   value={formik.values.link}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  helperText="Optional. Where to send users when they click the banner."
+                  helperText="Optional. Where to send users when they click the hero banner."
                 />
                 <TextField
                   fullWidth
@@ -156,7 +156,7 @@ export default function BannerFormPage() {
                   value={formik.values.position}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  helperText="Optional sort order (lower numbers show first)."
+                  helperText="Optional sort order for hero rotation (lower numbers show first)."
                 />
                 <FormControlLabel
                   control={
@@ -177,13 +177,13 @@ export default function BannerFormPage() {
             <CardContent>
               <Stack spacing={2}>
                 <Typography variant="h6" color="text.primary">
-                  Banner image
+                  Hero banner image
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Upload the main visual for this banner.
+                  Upload the main visual for this hero banner (homepage hero).
                 </Typography>
                 <ImageUpload
-                  label="Banner image"
+                  label="Hero banner image"
                   value={formik.values.image}
                   onChange={(url) => formik.setFieldValue('image', url)}
                 />
