@@ -64,7 +64,7 @@ export default function ProductFormPage() {
         shortDescription: product.shortDescription || '',
         description: product.description || '',
         sizeInfo: product.sizeInfo || '',
-        sizeChart: product.sizeChart || '',
+        sizeChartImageUrl: product.sizeChartImageUrl || '',
         discountPercentage:
           typeof product.discountPercentage === 'number'
             ? String(product.discountPercentage)
@@ -76,6 +76,40 @@ export default function ProductFormPage() {
         category: product.category?._id || product.category || '',
         brand: product.brand?._id || product.brand || '',
         price: product.price || '',
+        originalPrice:
+          typeof product.originalPrice === 'number'
+            ? String(product.originalPrice)
+            : '',
+        salePrice:
+          typeof product.salePrice === 'number'
+            ? String(product.salePrice)
+            : '',
+        isSale: product.isSale || false,
+        isNew: product.isNew || false,
+        rating:
+          typeof product.rating === 'number' ? String(product.rating) : '',
+        reviews:
+          typeof product.reviews === 'number' ? String(product.reviews) : '',
+        availableSizes: Array.isArray(product.availableSizes)
+          ? product.availableSizes.join(', ')
+          : '',
+        colors: Array.isArray(product.colors)
+          ? product.colors.join(', ')
+          : '',
+        bodyType: Array.isArray(product.bodyType)
+          ? product.bodyType.join(', ')
+          : '',
+        tags: Array.isArray(product.tags) ? product.tags.join(', ') : '',
+        status: product.status || 'published',
+        inStock: product.inStock !== false,
+        stockQuantity:
+          typeof product.stockQuantity === 'number'
+            ? String(product.stockQuantity)
+            : '',
+        stockCount:
+          typeof product.stockCount === 'number'
+            ? String(product.stockCount)
+            : '',
         featuredImage: product.featuredImage || '',
         gallery: product.gallery || [],
         isActive: product.isActive !== false,
@@ -96,13 +130,27 @@ export default function ProductFormPage() {
       shortDescription: '',
       description: '',
       sizeInfo: '',
-      sizeChart: '',
+      sizeChartImageUrl: '',
       discountPercentage: '',
       attributes: [],
       featuresText: '',
       category: '',
       brand: '',
       price: '',
+      originalPrice: '',
+      salePrice: '',
+      isSale: false,
+      isNew: false,
+      rating: '',
+      reviews: '',
+      availableSizes: '',
+      colors: '',
+      bodyType: '',
+      tags: '',
+      status: 'published',
+      inStock: true,
+      stockQuantity: '',
+      stockCount: '',
       featuredImage: '',
       gallery: [],
       isActive: true,
@@ -120,6 +168,13 @@ export default function ProductFormPage() {
           ...rest,
           slug: rest.slug || undefined,
           price: parseFloat(rest.price),
+          originalPrice:
+            rest.originalPrice !== '' ? parseFloat(rest.originalPrice) : undefined,
+          salePrice:
+            rest.salePrice !== '' ? parseFloat(rest.salePrice) : undefined,
+          rating: rest.rating !== '' ? parseFloat(rest.rating) : undefined,
+          reviews:
+            rest.reviews !== '' ? parseInt(rest.reviews, 10) : undefined,
           discountPercentage:
             rest.discountPercentage !== ''
               ? parseFloat(rest.discountPercentage)
@@ -128,7 +183,40 @@ export default function ProductFormPage() {
           featuredImage: rest.featuredImage || undefined,
           gallery: rest.gallery?.length ? rest.gallery : undefined,
           sizeInfo: rest.sizeInfo || undefined,
-          sizeChart: rest.sizeChart || undefined,
+          sizeChartImageUrl: rest.sizeChartImageUrl || undefined,
+          availableSizes: rest.availableSizes
+            ? rest.availableSizes
+                .split(',')
+                .map((s) => s.trim())
+                .filter(Boolean)
+            : undefined,
+          colors: rest.colors
+            ? rest.colors
+                .split(',')
+                .map((c) => c.trim())
+                .filter(Boolean)
+            : undefined,
+          bodyType: rest.bodyType
+            ? rest.bodyType
+                .split(',')
+                .map((b) => b.trim())
+                .filter(Boolean)
+            : undefined,
+          tags: rest.tags
+            ? rest.tags
+                .split(',')
+                .map((t) => t.trim())
+                .filter(Boolean)
+            : undefined,
+          inStock: rest.inStock,
+          stockQuantity:
+            rest.stockQuantity !== ''
+              ? parseInt(rest.stockQuantity, 10)
+              : undefined,
+          stockCount:
+            rest.stockCount !== ''
+              ? parseInt(rest.stockCount, 10)
+              : undefined,
           attributes:
             rest.attributes && rest.attributes.length
               ? rest.attributes.filter(
@@ -230,8 +318,10 @@ export default function ProductFormPage() {
                   </Typography>
                   <ImageUpload
                     label="Size chart"
-                    value={formik.values.sizeChart}
-                    onChange={(url) => formik.setFieldValue('sizeChart', url)}
+                    value={formik.values.sizeChartImageUrl}
+                    onChange={(url) =>
+                      formik.setFieldValue('sizeChartImageUrl', url)
+                    }
                   />
                 </Box>
                 <TextField
@@ -389,6 +479,26 @@ export default function ProductFormPage() {
                 />
                 <TextField
                   fullWidth
+                  label="Original price (optional)"
+                  name="originalPrice"
+                  type="number"
+                  value={formik.values.originalPrice}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  helperText="If set higher than price, shows as crossed-out compare-at price."
+                />
+                <TextField
+                  fullWidth
+                  label="Sale price (optional)"
+                  name="salePrice"
+                  type="number"
+                  value={formik.values.salePrice}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  helperText="Optional explicit sale price."
+                />
+                <TextField
+                  fullWidth
                   label="Discount (%)"
                   name="discountPercentage"
                   type="number"
@@ -402,6 +512,20 @@ export default function ProductFormPage() {
                   fullWidth
                   select
                   label="Status"
+                  name="status"
+                  value={formik.values.status}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  helperText="Draft products are hidden from the storefront."
+                >
+                  <MenuItem value="draft">Draft</MenuItem>
+                  <MenuItem value="published">Published</MenuItem>
+                  <MenuItem value="archived">Archived</MenuItem>
+                </TextField>
+                <TextField
+                  fullWidth
+                  select
+                  label="Active"
                   name="isActive"
                   value={formik.values.isActive}
                   onChange={formik.handleChange}
@@ -410,6 +534,146 @@ export default function ProductFormPage() {
                   <MenuItem value={true}>Active</MenuItem>
                   <MenuItem value={false}>Inactive</MenuItem>
                 </TextField>
+              </Stack>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent>
+              <Stack spacing={2}>
+                <Typography variant="h6">Badges, ratings & inventory</Typography>
+                <TextField
+                  fullWidth
+                  select
+                  label="Mark as new"
+                  name="isNew"
+                  value={formik.values.isNew}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                >
+                  <MenuItem value={true}>Yes</MenuItem>
+                  <MenuItem value={false}>No</MenuItem>
+                </TextField>
+                <TextField
+                  fullWidth
+                  select
+                  label="Mark as on sale"
+                  name="isSale"
+                  value={formik.values.isSale}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                >
+                  <MenuItem value={true}>Yes</MenuItem>
+                  <MenuItem value={false}>No</MenuItem>
+                </TextField>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Rating (0–5)"
+                      name="rating"
+                      type="number"
+                      inputProps={{ min: 0, max: 5, step: 0.1 }}
+                      value={formik.values.rating}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Reviews count"
+                      name="reviews"
+                      type="number"
+                      inputProps={{ min: 0, step: 1 }}
+                      value={formik.values.reviews}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      select
+                      label="In stock"
+                      name="inStock"
+                      value={formik.values.inStock}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                    >
+                      <MenuItem value={true}>Yes</MenuItem>
+                      <MenuItem value={false}>No</MenuItem>
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Stock quantity (optional)"
+                      name="stockQuantity"
+                      type="number"
+                      inputProps={{ min: 0, step: 1 }}
+                      value={formik.values.stockQuantity}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                    />
+                  </Grid>
+                </Grid>
+                <TextField
+                  fullWidth
+                  label="Stock count override (optional)"
+                  name="stockCount"
+                  type="number"
+                  inputProps={{ min: 0, step: 1 }}
+                  value={formik.values.stockCount}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+              </Stack>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent>
+              <Stack spacing={2}>
+                <Typography variant="h6">Variants & tags</Typography>
+                <TextField
+                  fullWidth
+                  label="Available sizes (comma separated)"
+                  name="availableSizes"
+                  placeholder="S, M, L, XL"
+                  value={formik.values.availableSizes}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+                <TextField
+                  fullWidth
+                  label="Colors (comma separated)"
+                  name="colors"
+                  placeholder="Black, White, Navy"
+                  value={formik.values.colors}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+                <TextField
+                  fullWidth
+                  label="Body type tags (comma separated)"
+                  name="bodyType"
+                  placeholder="Petite, Tall, Plus"
+                  value={formik.values.bodyType}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+                <TextField
+                  fullWidth
+                  label="Search tags (comma separated)"
+                  name="tags"
+                  placeholder="summer, casual, office"
+                  value={formik.values.tags}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
               </Stack>
             </CardContent>
           </Card>
