@@ -72,7 +72,8 @@ export default function BannersPage() {
             <TableRow>
               <TableCell>Preview</TableCell>
               <TableCell>Title</TableCell>
-              <TableCell>Link</TableCell>
+              <TableCell>Button text</TableCell>
+              <TableCell>Button link</TableCell>
               <TableCell>Position</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Actions</TableCell>
@@ -116,8 +117,9 @@ export default function BannersPage() {
                     )}
                   </TableCell>
                   <TableCell>{banner.title || '-'}</TableCell>
-                  <TableCell>{banner.link || '-'}</TableCell>
-                  <TableCell>{banner.position ?? '-'}</TableCell>
+                  <TableCell>{banner.buttonText || '-'}</TableCell>
+                  <TableCell>{banner.buttonLink || '-'}</TableCell>
+                  <TableCell>{banner.sortOrder ?? '-'}</TableCell>
                   <TableCell>
                     <Chip
                       label={banner.isActive ? 'Active' : 'Inactive'}

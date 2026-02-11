@@ -60,6 +60,7 @@ export default function ProductFormPage() {
       const product = await productsApi.getById(id);
       formik.setValues({
         name: product.name || '',
+        slug: product.slug || '',
         shortDescription: product.shortDescription || '',
         description: product.description || '',
         sizeInfo: product.sizeInfo || '',
@@ -91,6 +92,7 @@ export default function ProductFormPage() {
   const formik = useFormik({
     initialValues: {
       name: '',
+      slug: '',
       shortDescription: '',
       description: '',
       sizeInfo: '',
@@ -116,6 +118,7 @@ export default function ProductFormPage() {
 
         const data = {
           ...rest,
+          slug: rest.slug || undefined,
           price: parseFloat(rest.price),
           discountPercentage:
             rest.discountPercentage !== ''
@@ -182,6 +185,15 @@ export default function ProductFormPage() {
                   error={formik.touched.name && Boolean(formik.errors.name)}
                   helperText={formik.touched.name && formik.errors.name}
                   required
+                />
+                <TextField
+                  fullWidth
+                  label="Slug (optional)"
+                  name="slug"
+                  value={formik.values.slug}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  helperText="Leave empty to auto-generate from name or keep URL internal."
                 />
                 <TextField
                   fullWidth

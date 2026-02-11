@@ -44,8 +44,9 @@ export default function BannerFormPage() {
         title: banner.title || '',
         subtitle: banner.subtitle || '',
         image: banner.image || '',
-        link: banner.link || '',
-        position: banner.position ?? '',
+        buttonText: banner.buttonText || '',
+        buttonLink: banner.buttonLink || '',
+        sortOrder: banner.sortOrder ?? '',
         isActive: banner.isActive !== false,
       });
     } catch (error) {
@@ -62,8 +63,9 @@ export default function BannerFormPage() {
       title: '',
       subtitle: '',
       image: '',
-      link: '',
-      position: '',
+      buttonText: '',
+      buttonLink: '',
+      sortOrder: '',
       isActive: true,
     },
     validationSchema,
@@ -72,11 +74,12 @@ export default function BannerFormPage() {
         const payload = {
           ...values,
           image: values.image || undefined,
-          link: values.link || undefined,
-          position:
-            values.position === '' || values.position === null
+          buttonText: values.buttonText || undefined,
+          buttonLink: values.buttonLink || undefined,
+          sortOrder:
+            values.sortOrder === '' || values.sortOrder === null
               ? undefined
-              : Number(values.position),
+              : Number(values.sortOrder),
         };
         if (isEdit) {
           await bannersApi.update(id, payload);
@@ -141,19 +144,28 @@ export default function BannerFormPage() {
                 />
                 <TextField
                   fullWidth
-                  label="Link URL"
-                  name="link"
-                  value={formik.values.link}
+                  label="Button text"
+                  name="buttonText"
+                  value={formik.values.buttonText}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  helperText="Optional. Where to send users when they click the hero banner."
+                  helperText="Optional text for the hero call-to-action button."
+                />
+                <TextField
+                  fullWidth
+                  label="Button link URL"
+                  name="buttonLink"
+                  value={formik.values.buttonLink}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  helperText="Optional. Where to send users when they click the hero banner button."
                 />
                 <TextField
                   fullWidth
                   type="number"
                   label="Position"
-                  name="position"
-                  value={formik.values.position}
+                  name="sortOrder"
+                  value={formik.values.sortOrder}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   helperText="Optional sort order for hero rotation (lower numbers show first)."
