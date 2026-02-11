@@ -4,6 +4,7 @@ import { lazy } from 'react';
 import Loadable from 'components/Loadable';
 import AuthLayout from 'layout/Auth';
 import GuestRoute from 'components/GuestRoute';
+import ErrorPage from 'pages/ErrorPage';
 
 // jwt auth
 const LoginPage = Loadable(lazy(() => import('pages/auth/Login')));
@@ -17,6 +18,7 @@ const LoginRoutes = {
       <AuthLayout />
     </GuestRoute>
   ),
+  errorElement: <ErrorPage />,
   children: [
     {
       path: '/login',

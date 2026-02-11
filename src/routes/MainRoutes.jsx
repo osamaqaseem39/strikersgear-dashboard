@@ -4,6 +4,7 @@ import { lazy } from 'react';
 import Loadable from 'components/Loadable';
 import DashboardLayout from 'layout/Dashboard';
 import ProtectedRoute from 'components/ProtectedRoute';
+import ErrorPage from 'pages/ErrorPage';
 
 // render- Dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/default')));
@@ -32,6 +33,7 @@ const MainRoutes = {
       <DashboardLayout />
     </ProtectedRoute>
   ),
+  errorElement: <ErrorPage />,
   children: [
     {
       index: true,
