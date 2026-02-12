@@ -23,7 +23,7 @@ import { ArrowBack } from '@mui/icons-material';
 import MainCard from 'components/MainCard';
 import ImageUpload from 'components/ImageUpload';
 import ImageGalleryUpload from 'components/ImageGalleryUpload';
-import { productsApi, categoriesApi, brandsApi, sizesApi } from 'api/api';
+import { productsApi, categoriesApi, brandsApi, sizesApi, stockApi } from 'api/api';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
@@ -42,6 +42,7 @@ export default function ProductFormPage() {
   const [loading, setLoading] = useState(isEdit);
   const [sizes, setSizes] = useState([]);
   const [tab, setTab] = useState(0);
+  const [variantStocks, setVariantStocks] = useState({});
 
   useEffect(() => {
     loadData();
@@ -125,6 +126,22 @@ export default function ProductFormPage() {
         gallery: product.gallery || [],
         isActive: product.isActive !== false,
       });
+
+      // Load existing per-size stock for this product
+      try {
+        const stocks = await stockApi.getAll(product._id);
+        const next = {};
+        (stocks || []).forEach((row) => {
+          const sizeId = row.size?._id || row.size;
+          if (sizeId) {
+            next[sizeId] =
+              typeof row.stockQty === 'number' ? String(row.stockQty) : '';
+          }
+        });
+        setVariantStocks(next);
+      } catch (stockError) {
+        console.error('Error loading product stock:', stockError);
+      }
     } catch (error) {
       console.error('Error loading product:', error);
       alert('Error loading product: ' + error.message);
@@ -234,11 +251,27 @@ export default function ProductFormPage() {
               : undefined,
           features: features.length ? features : undefined,
         };
+
+        let savedProduct;
         if (isEdit) {
-          await productsApi.update(id, data);
+          savedProduct = await productsApi.update(id, data);
         } else {
-          await productsApi.create(data);
+          savedProduct = await productsApi.create(data);
         }
+
+        const productId = isEdit ? id : savedProduct?._id;
+
+        // Sync per-size stock with backend
+        if (productId && variantStocks && Object.keys(variantStocks).length > 0) {
+          await Promise.all(
+            Object.entries(variantStocks).map(([sizeId, qty]) => {
+              const parsed = parseInt(qty, 10);
+              if (Number.isNaN(parsed) || parsed < 0) return Promise.resolve();
+              return stockApi.updateStock(productId, sizeId, parsed);
+            })
+          );
+        }
+
         navigate('/products');
       } catch (error) {
         console.error('Error saving product:', error);
@@ -657,6 +690,46 @@ export default function ProductFormPage() {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                 />
+
+                {/* Per-size inventory mapped from variants */}
+                {Array.isArray(formik.values.availableSizes) &&
+                  formik.values.availableSizes.length > 0 && (
+                    <Stack spacing={1} sx={{ mt: 2 }}>
+                      <Typography variant="subtitle1">
+                        Per-size inventory
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Set stock quantities for each selected size. These values
+                        are stored in the central stock collection and used by
+                        the storefront when customers pick a size.
+                      </Typography>
+                      <Grid container spacing={2} sx={{ mt: 1 }}>
+                        {formik.values.availableSizes.map((label) => {
+                          const size = sizes.find((s) => s.label === label);
+                          if (!size) return null;
+                          const key = size._id;
+                          return (
+                            <Grid item xs={12} sm={6} md={4} key={key}>
+                              <TextField
+                                fullWidth
+                                label={`Stock for ${size.label}`}
+                                type="number"
+                                inputProps={{ min: 0, step: 1 }}
+                                value={variantStocks[key] ?? ''}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setVariantStocks((prev) => ({
+                                    ...prev,
+                                    [key]: val,
+                                  }));
+                                }}
+                              />
+                            </Grid>
+                          );
+                        })}
+                      </Grid>
+                    </Stack>
+                  )}
               </Stack>
             </CardContent>
           </Card>
@@ -678,13 +751,15 @@ export default function ProductFormPage() {
                     renderValue={(selected) => (selected || []).join(', ')}
                   >
                     {sizes.map((size) => (
-                      <MenuItem key={size._id} value={size.name}>
+                      <MenuItem key={size._id} value={size.label}>
                         <Checkbox
                           checked={
-                            (formik.values.availableSizes || []).indexOf(size.name) > -1
+                            (formik.values.availableSizes || []).indexOf(
+                              size.label
+                            ) > -1
                           }
                         />
-                        <ListItemText primary={size.name} />
+                        <ListItemText primary={size.label} />
                       </MenuItem>
                     ))}
                   </Select>

@@ -88,17 +88,25 @@ export default function SizeFormPage() {
     onSubmit: async (values) => {
       try {
         if (isSizeType) {
+          // For size types, only send 'name'
+          const sizeTypeData = { name: values.name };
           if (isEdit) {
             // Update size type if API supports it
-            await sizesApi.createSizeType(values);
+            await sizesApi.createSizeType(sizeTypeData);
           } else {
-            await sizesApi.createSizeType(values);
+            await sizesApi.createSizeType(sizeTypeData);
           }
         } else {
+          // For sizes, only send sizeType, label, and sortOrder
+          const sizeData = {
+            sizeType: values.sizeType,
+            label: values.label,
+            sortOrder: values.sortOrder || 0,
+          };
           if (isEdit) {
-            await sizesApi.update(id, values);
+            await sizesApi.update(id, sizeData);
           } else {
-            await sizesApi.create(values);
+            await sizesApi.create(sizeData);
           }
         }
         navigate('/sizes');

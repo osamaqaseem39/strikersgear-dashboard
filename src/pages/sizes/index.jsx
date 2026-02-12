@@ -52,8 +52,7 @@ export default function SizesPage() {
     if (window.confirm('Are you sure you want to delete this item?')) {
       try {
         if (isType) {
-          // Handle size type deletion if API supports it
-          alert('Size type deletion not implemented in API');
+          await sizesApi.deleteSizeType(id);
         } else {
           await sizesApi.delete(id);
         }

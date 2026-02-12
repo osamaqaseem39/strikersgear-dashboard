@@ -84,6 +84,7 @@ export const categoriesApi = {
 export const sizesApi = {
   getSizeTypes: () => apiRequest('/sizes/types'),
   createSizeType: (data) => apiRequest('/sizes/types', { method: 'POST', body: data }),
+  deleteSizeType: (id) => apiRequest(`/sizes/types/${id}`, { method: 'DELETE' }),
   getAll: (sizeTypeId) => apiRequest(`/sizes${sizeTypeId ? `?sizeTypeId=${sizeTypeId}` : ''}`),
   getById: (id) => apiRequest(`/sizes/${id}`),
   create: (data) => apiRequest('/sizes', { method: 'POST', body: data }),
