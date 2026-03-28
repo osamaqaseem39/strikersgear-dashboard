@@ -33,6 +33,24 @@ const validationSchema = yup.object({
   price: yup.number().positive('Price must be positive').required('Price is required'),
 });
 
+// Helper function to format size as "sizeType label"
+const formatSizeDisplay = (size) => {
+  if (!size) return '';
+  const sizeTypeName = size.sizeType?.name || (typeof size.sizeType === 'string' ? '' : '');
+  const label = size.label || '';
+  return sizeTypeName ? `${sizeTypeName} ${label}` : label;
+};
+
+// Helper function to parse "sizeType label" back to size object
+const parseSizeDisplay = (displayValue, sizes) => {
+  if (!displayValue) return null;
+  // Try to find by display format first
+  const size = sizes.find(s => formatSizeDisplay(s) === displayValue);
+  if (size) return size;
+  // Fallback: try to find by label only (for backward compatibility)
+  return sizes.find(s => s.label === displayValue);
+};
+
 export default function ProductFormPage() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -704,15 +722,16 @@ export default function ProductFormPage() {
                         the storefront when customers pick a size.
                       </Typography>
                       <Grid container spacing={2} sx={{ mt: 1 }}>
-                        {formik.values.availableSizes.map((label) => {
-                          const size = sizes.find((s) => s.label === label);
+                        {formik.values.availableSizes.map((displayValue) => {
+                          const size = parseSizeDisplay(displayValue, sizes);
                           if (!size) return null;
                           const key = size._id;
+                          const displayLabel = formatSizeDisplay(size);
                           return (
                             <Grid item xs={12} sm={6} md={4} key={key}>
                               <TextField
                                 fullWidth
-                                label={`Stock for ${size.label}`}
+                                label={`Stock for ${displayLabel}`}
                                 type="number"
                                 inputProps={{ min: 0, step: 1 }}
                                 value={variantStocks[key] ?? ''}
@@ -750,18 +769,21 @@ export default function ProductFormPage() {
                     label="Available sizes"
                     renderValue={(selected) => (selected || []).join(', ')}
                   >
-                    {sizes.map((size) => (
-                      <MenuItem key={size._id} value={size.label}>
-                        <Checkbox
-                          checked={
-                            (formik.values.availableSizes || []).indexOf(
-                              size.label
-                            ) > -1
-                          }
-                        />
-                        <ListItemText primary={size.label} />
-                      </MenuItem>
-                    ))}
+                    {sizes.map((size) => {
+                      const displayValue = formatSizeDisplay(size);
+                      return (
+                        <MenuItem key={size._id} value={displayValue}>
+                          <Checkbox
+                            checked={
+                              (formik.values.availableSizes || []).indexOf(
+                                displayValue
+                              ) > -1
+                            }
+                          />
+                          <ListItemText primary={displayValue} />
+                        </MenuItem>
+                      );
+                    })}
                   </Select>
                 </FormControl>
                 <TextField

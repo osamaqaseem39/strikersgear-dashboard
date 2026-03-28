@@ -148,11 +148,15 @@ export default function StockFormPage() {
                 disabled={!!isEdit}
                 required
               >
-                {sizes.map((size) => (
-                  <MenuItem key={size._id} value={size._id}>
-                    {size.label} ({size.sizeType?.name || ''})
-                  </MenuItem>
-                ))}
+                {sizes.map((size) => {
+                  const sizeTypeName = size.sizeType?.name || '';
+                  const displayLabel = sizeTypeName ? `${sizeTypeName} ${size.label}` : size.label;
+                  return (
+                    <MenuItem key={size._id} value={size._id}>
+                      {displayLabel}
+                    </MenuItem>
+                  );
+                })}
               </TextField>
               <TextField
                 fullWidth
